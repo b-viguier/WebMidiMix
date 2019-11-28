@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>WebMidi Mix</title>
+
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+    <script src="js/webmidi.min.js"></script>
+    <script src="js/vue.js"></script>
+</head>
+<body>
+
+<script type="text/x-template" id="midi-track-template">
+    <div class="track">
+        <p>Channel {{ channel }}</p>
+        <label>Volume
+            <input type="range" min="0" max="127" v-model="volume">
+        </label>
+    </div>
+</script>
+
+<div id="webmidimix">
+
+    <div v-if="errorMessage" class="error">{{ errorMessage }}</div>
+    <div v-else-if="midiOutput == null">Looking for MIDI devices…</div>
+    <div  class="settings">
+        <span v-if="midiOutput != null">
+            <label for="midi-output">Midi Output:</label>
+            <select id="midi-output" v-model="selectedMidiOutputId">
+                <option v-for="output in WebMidi.outputs" :value="output.id" :key="output.id">{{ output.name }}</option>
+            </select>
+        </span>
+    </div>
+
+    <midi-track v-for="channel in 16" :channel="channel" v-on:control-changed="onControlChanged"/>
+
+    <div class="credits">
+        <a href="https://github.com/b-viguier/WebMidiMix">WebMidiMix</a>
+        by
+        <a href="https://twitter.com/b_viguier">@b_viguier</a>
+    </div>
+
+</div>
+
+<script src="js/WebMidiMix.js"></script>
+
+</body>
+</html>
