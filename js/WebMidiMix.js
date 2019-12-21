@@ -1,18 +1,26 @@
 Object.defineProperty(Vue.prototype, 'WebMidi', { value: WebMidi });
+Object.defineProperty(Vue.prototype, 'soundbanks', { value: soundbanks });
 
 Vue.component('midi-track', {
     template: '#midi-track-template',
     props: {
-        channel: Number
+        channel: Number,
+        soundbank: Object
     },
     data: function () {
         return {
-            volume: 100
+            volume: 100,
+            instrument: {}
         }
     },
     watch: {
         volume(volume) {
             this.$emit('control-changed', {controller: 'volumecoarse', value: volume, channel: this.channel});
+        },
+        instrument(instrument) {
+            this.$emit('control-changed', {controller: 'bankselectcoarse', value: instrument.cc00, channel: this.channel});
+            this.$emit('control-changed', {controller: 'bankselectfine', value: instrument.cc32, channel: this.channel});
+            this.$emit('program-changed', {program: instrument.pc, channel: this.channel});
         }
     },
     methods: {
@@ -22,12 +30,10 @@ Vue.component('midi-track', {
 
 var app = new Vue({
     el: '#webmidimix',
-    props: {
-    },
     data:  {
         errorMessage: null,
         selectedMidiOutputId: null,
-        midiOutput: null
+        midiOutput: null,
     },
     created: function () {
 
@@ -54,6 +60,9 @@ var app = new Vue({
     methods: {
         onControlChanged(event) {
             this.midiOutput.sendControlChange(event.controller, event.value, event.channel);
+        },
+        onProgramChanged(event) {
+            this.midiOutput.sendProgramChange(event.program, event.channel);
         }
     }
 });

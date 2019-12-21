@@ -7,15 +7,33 @@
     <link rel="stylesheet" type="text/css" href="css/style.css" />
     <script src="js/webmidi.min.js"></script>
     <script src="js/vue.js"></script>
+
+    <script>
+        var soundbanks = [];
+    </script>
+    <script src="soundbank/korg-pa50sd.js"></script>
 </head>
 <body>
 
 <script type="text/x-template" id="midi-track-template">
     <div class="track">
+        <div>
         <p>Channel {{ channel }}</p>
-        <label>Volume
-            <input type="range" min="0" max="127" v-model="volume">
+        <label>Instrument
+            <select v-model="instrument">
+                <optgroup v-for="(instruments, group) in soundbank" :label="group">
+                    <option v-for="(midiCC, name) in instruments" :value="midiCC">
+                        {{name}}
+                    </option>
+                </optgroup>
+            </select>
         </label>
+        </div>
+        <div>
+        <label>Volume
+            <input type="range" class="" min="0" max="127" v-model="volume">
+        </label>
+        </div>
     </div>
 </script>
 
@@ -32,7 +50,10 @@
         </span>
     </div>
 
-    <midi-track v-for="channel in 16" :channel="channel" v-on:control-changed="onControlChanged"/>
+    <midi-track v-for="channel in 16" :channel="channel" :soundbank="soundbanks['korg-pa50sd']"
+        v-on:control-changed="onControlChanged"
+        v-on:program-changed="onProgramChanged"
+    />
 
     <div class="credits">
         <a href="https://github.com/b-viguier/WebMidiMix">WebMidiMix</a>
