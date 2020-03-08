@@ -34,8 +34,12 @@ var app = new Vue({
         errorMessage: null,
         selectedMidiOutputId: null,
         midiOutput: null,
+        currentSoundBank: null,
+        soundbanks: {},
     },
     created: function () {
+        this.soundbanks = Object.assign({}, this.soundbanks, soundbanks);
+        this.currentSoundBank = Object.values(this.soundbanks)[0];
 
         WebMidi.enable((errorMessage) => {
 
